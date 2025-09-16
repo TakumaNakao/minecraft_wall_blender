@@ -26,9 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
         images[name] = img;
     }
 
-    createColorImage('red.png', '#F08080'); // lightcoral
-    createColorImage('green.png', '#90EE90'); // lightgreen
-    createColorImage('blue.png', '#87CEFA'); // lightskyblue
+    createColorImage('red.png', '#F08080'); // A soft red
+    createColorImage('yellow.png', '#FCE788'); // A soft yellow
+    createColorImage('blue.png', '#90B4CE'); // A muted blue
 
     let blockCount = 0;
 
@@ -180,6 +180,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     addBlockInput('red.png', 1);
-    addBlockInput('green.png', 1);
+    addBlockInput('yellow.png', 1);
     addBlockInput('blue.png', 1);
 });
