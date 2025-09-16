@@ -1,5 +1,7 @@
 # Minecraft Wall Blender
 
+[Minecraft Wall Blender](https://takumanakao.github.io/minecraft_wall_blender/)
+
 This is a tool to help you design walls in Minecraft by blending different blocks randomly.
 
 ## How to Use

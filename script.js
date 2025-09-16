@@ -6,7 +6,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const ctx = canvas.getContext('2d');
     const wallWidthInput = document.getElementById('wall-width');
     const wallHeightInput = document.getElementById('wall-height');
+    const drawBorderCheckbox = document.getElementById('draw-border-checkbox');
     const blockSize = 16; // 1ブロックのピクセルサイズ
+
+    let lastWallData = null;
 
     // デフォルト画像とアップロードされた画像を格納
     const images = {};
@@ -64,7 +67,35 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function drawWall() {
+        if (!lastWallData) return;
+
+        const { blocks, width, height } = lastWallData;
+        const drawBorders = drawBorderCheckbox.checked;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+                const blockIndex = y * width + x;
+                const blockType = blocks[blockIndex];
+                const img = images[blockType];
+                if (img && img.complete) {
+                    ctx.drawImage(img, x * blockSize, y * blockSize, blockSize, blockSize);
+                    if (drawBorders) {
+                        ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+                        ctx.lineWidth = 1;
+                        ctx.strokeRect(x * blockSize, y * blockSize, blockSize, blockSize);
+                    }
+                } else if (!img) {
+                    console.warn(`画像 '${blockType}' が見つかりません。`);
+                }
+            }
+        }
+    }
+
     addBlockBtn.addEventListener('click', () => addBlockInput());
+    drawBorderCheckbox.addEventListener('change', drawWall);
 
     generateBtn.addEventListener('click', () => {
         const wallWidth = parseInt(wallWidthInput.value, 10);
@@ -97,6 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (totalRatio === 0) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             alert('ブロックの割合を1以上に設定してください。');
+            lastWallData = null;
             return;
         }
 
@@ -122,35 +154,24 @@ document.addEventListener('DOMContentLoaded', () => {
             [wallBlocks[i], wallBlocks[j]] = [wallBlocks[j], wallBlocks[i]];
         }
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        const drawAll = () => {
-            for (let y = 0; y < wallHeight; y++) {
-                for (let x = 0; x < wallWidth; x++) {
-                    const blockIndex = y * wallWidth + x;
-                    const blockType = wallBlocks[blockIndex];
-                    const img = images[blockType];
-                    if (img && img.complete) {
-                        ctx.drawImage(img, x * blockSize, y * blockSize, blockSize, blockSize);
-                    } else if (!img) {
-                        console.warn(`画像 '${blockType}' が見つかりません。`);
-                    }
-                }
-            }
+        lastWallData = {
+            blocks: wallBlocks,
+            width: wallWidth,
+            height: wallHeight,
         };
-
+        
         const imageTypes = [...new Set(wallBlocks.filter(type => images[type]))];
         let imagesToLoad = imageTypes.filter(type => !images[type].complete).length;
 
         if (imagesToLoad === 0) {
-            drawAll();
+            drawWall();
         } else {
             imageTypes.forEach(type => {
                 if (!images[type].complete) {
                     images[type].onload = () => {
                         imagesToLoad--;
                         if (imagesToLoad === 0) {
-                            drawAll();
+                            drawWall();
                         }
                     };
                 }
