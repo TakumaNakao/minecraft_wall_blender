@@ -26,9 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
         images[name] = img;
     }
 
-    createColorImage('red.png', 'red');
-    createColorImage('green.png', 'green');
-    createColorImage('blue.png', 'blue');
+    createColorImage('red.png', '#F08080'); // lightcoral
+    createColorImage('green.png', '#90EE90'); // lightgreen
+    createColorImage('blue.png', '#87CEFA'); // lightskyblue
 
     let blockCount = 0;
 
